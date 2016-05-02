@@ -76,8 +76,8 @@ function initbidResponseReceivedCount() {
     delete bidResponseReceivedCount[prop];
   }
 
-  for (var i = 0; i < pbjs.adUnits.length; i++) {
-    var bids = pbjs.adUnits[i].bids;
+  for (var i = 0; i < PrebidGlobal.adUnits.length; i++) {
+    var bids = PrebidGlobal.adUnits[i].bids;
     for (var j = 0; j < bids.length; j++) {
       var bidder = bids[j].bidder;
       bidResponseReceivedCount[bidder] = 0;
@@ -205,7 +205,7 @@ exports.createEmptyBidResponseObj = function () {
 
 exports.getKeyValueTargetingPairs = function (bidderCode, custBidObj) {
   var keyValues = {};
-  var bidder_settings = pbjs.bidderSettings || {};
+  var bidder_settings = PrebidGlobal.bidderSettings || {};
 
   //1) set the keys from "standard" setting or from prebid defaults
   if (custBidObj && bidder_settings) {
@@ -312,10 +312,10 @@ exports.registerBidRequestTime = function (bidderCode, time) {
 exports.executeCallback = function () {
   var params = [];
 
-  //this pbjs.registerBidCallbackHandler will be deprecated soon
-  if (typeof pbjs.registerBidCallbackHandler === objectType_function && !_callbackExecuted) {
+  //this PrebidGlobal.registerBidCallbackHandler will be deprecated soon
+  if (typeof PrebidGlobal.registerBidCallbackHandler === objectType_function && !_callbackExecuted) {
     try {
-      pbjs.registerBidCallbackHandler();
+      PrebidGlobal.registerBidCallbackHandler();
       _callbackExecuted = true;
     } catch (e) {
       _callbackExecuted = true;
@@ -333,7 +333,7 @@ exports.executeCallback = function () {
   //execute one time callback
   if (externalOneTimeCallback) {
     params = [];
-    var responseObj = pbjs.getBidResponses();
+    var responseObj = PrebidGlobal.getBidResponses();
     params.push(responseObj);
 
     processCallbacks(externalOneTimeCallback, params);
@@ -368,7 +368,7 @@ function processCallbacks(callbackQueue, params) {
 function callFunction(func, args) {
   if (typeof func === 'function') {
     try {
-      func.apply(pbjs, args);
+      func.apply(PrebidGlobal, args);
 
       //func.executed = true;
     }
@@ -379,8 +379,8 @@ function callFunction(func, args) {
 }
 
 function checkBidsBackByAdUnit(adUnitCode) {
-  for (var i = 0; i < pbjs.adUnits.length; i++) {
-    var adUnit = pbjs.adUnits[i];
+  for (var i = 0; i < PrebidGlobal.adUnits.length; i++) {
+    var adUnit = PrebidGlobal.adUnits[i];
     if (adUnit.code === adUnitCode) {
       var bidsBack = pbBidResponseByPlacement[adUnitCode].bidsReceivedCount;
 
@@ -410,7 +410,7 @@ exports.checkIfAllBidsAreIn = function (adUnitCode) {
   checkBidsBackByAdUnit(adUnitCode);
 
   if (_allBidsAvailable) {
-    //execute our calback method if it exists && pbjs.initAdserverSet !== true
+    //execute our calback method if it exists && PrebidGlobal.initAdserverSet !== true
     this.executeCallback();
   }
 };
@@ -457,10 +457,10 @@ events.on(CONSTANTS.EVENTS.BID_ADJUSTMENT, function (bid) {
 function adjustBids(bid) {
   var code = bid.bidderCode;
   var bidPriceAdjusted = bid.cpm;
-  if (code && pbjs.bidderSettings && pbjs.bidderSettings[code]) {
-    if (typeof pbjs.bidderSettings[code].bidCpmAdjustment === objectType_function) {
+  if (code && PrebidGlobal.bidderSettings && PrebidGlobal.bidderSettings[code]) {
+    if (typeof PrebidGlobal.bidderSettings[code].bidCpmAdjustment === objectType_function) {
       try {
-        bidPriceAdjusted = pbjs.bidderSettings[code].bidCpmAdjustment.call(null, bid.cpm);
+        bidPriceAdjusted = PrebidGlobal.bidderSettings[code].bidCpmAdjustment.call(null, bid.cpm);
       }
       catch (e) {
         utils.logError('Error during bid adjustment', 'bidmanager.js', e);

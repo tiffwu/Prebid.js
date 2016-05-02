@@ -44,10 +44,21 @@ module.exports = {
             }
           ]
         })
+      },
+      {
+        test: /\.js$/,
+        include: /(src|test)/,
+        loader: StringReplacePlugin.replace({
+          replacements: [
+            {
+              pattern: /PrebidGlobal/g,
+              replacement: function (match, p1, offset, string) {
+                return prebid.globalVarName;
+              }
+            }
+          ]
+        })
       }
     ]
   },
-  plugins: [
-    new StringReplacePlugin()
-  ]
 };
