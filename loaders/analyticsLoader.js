@@ -19,7 +19,7 @@ var options = {
       if (files.includes(adapter)) {
         return adapter;
       } else {
-        console.log(`Prebid Warning: no adapter found for ${adapter}, continuing.`);
+        console.log(`Prebid Warning: no analytics adapter found for ${adapter}, continuing.`);
       }
     });
 
